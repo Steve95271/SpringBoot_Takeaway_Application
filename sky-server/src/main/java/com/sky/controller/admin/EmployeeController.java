@@ -15,10 +15,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -91,6 +88,13 @@ public class EmployeeController {
         return Result.success();
     }
 
+    /**
+     * 分页查询员工
+     * @param employeePageQueryDTO 姓名，页码，每页查询数
+     * @return
+     */
+    @GetMapping("/page")
+    @ApiOperation("分页查询员工")
     public Result<PageResult> getQueryPage(EmployeePageQueryDTO employeePageQueryDTO) {
         log.info("查询员工: {}", employeePageQueryDTO);
         PageResult pageResult = employeeService.getEmployees(employeePageQueryDTO);
