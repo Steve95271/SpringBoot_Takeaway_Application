@@ -25,5 +25,7 @@ public interface EmployeeService {
      * 分页查询员工
      * @return
      */
-    PageResult getEmployees(EmployeePageQueryDTO employeePageQueryDTO);
+    PageResult pagingQueryEmployee(EmployeePageQueryDTO employeePageQueryDTO);
+
+    void changeEmployeeState(Integer state, Long id);
 }

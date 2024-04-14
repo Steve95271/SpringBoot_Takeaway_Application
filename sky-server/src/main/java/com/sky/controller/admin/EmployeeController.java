@@ -97,8 +97,16 @@ public class EmployeeController {
     @ApiOperation("分页查询员工")
     public Result<PageResult> getQueryPage(EmployeePageQueryDTO employeePageQueryDTO) {
         log.info("查询员工: {}", employeePageQueryDTO);
-        PageResult pageResult = employeeService.getEmployees(employeePageQueryDTO);
+        PageResult pageResult = employeeService.pagingQueryEmployee(employeePageQueryDTO);
         return Result.success(pageResult);
+    }
+
+    @PostMapping("/status/{status}")
+    @ApiOperation("启用/禁用员工")
+    public Result changeEmployeeState(@PathVariable Integer status, Long id) {
+        log.info("修改员工ID: {} 为{}状态",status, id);
+        employeeService.changeEmployeeState(status, id);
+        return Result.success();
     }
 
 }

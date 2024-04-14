@@ -27,5 +27,16 @@ public interface EmployeeMapper {
             "VALUES (#{name}, #{username}, #{password}, #{phone}, #{sex}, #{idNumber}, #{createTime}, #{updateTime}, #{createUser}, #{updateUser})")
     void insert(Employee employee);
 
+    /**
+     * 分页查询员工信息
+     * @param employeePageQueryDTO 前端传过来的数据
+     * @return 分页查询的员工信息列表
+     */
     Page<Employee> pageQuery(EmployeePageQueryDTO employeePageQueryDTO);
+
+    /**
+     * 更新员工的通用SQL
+     * @param employee 员工对象
+     */
+    void update(Employee employee);
 }
