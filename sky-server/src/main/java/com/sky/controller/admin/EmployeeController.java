@@ -101,11 +101,34 @@ public class EmployeeController {
         return Result.success(pageResult);
     }
 
+    /**
+     * 修改员工状态
+     * @param status 0-禁用，1-启用
+     * @param id 员工id
+     *
+     */
     @PostMapping("/status/{status}")
     @ApiOperation("启用/禁用员工")
     public Result changeEmployeeState(@PathVariable Integer status, Long id) {
         log.info("修改员工ID: {} 为{}状态",status, id);
         employeeService.changeEmployeeState(status, id);
+        return Result.success();
+    }
+
+    @GetMapping("/{id}")
+    @ApiOperation("根据ID查询员工")
+    public Result<Employee> getById(@PathVariable Long id) {
+        log.info("查询的员工ID: {}", id);
+        Employee employee = employeeService.getById(id);
+        employee.setPassword("休想看我密码");
+        return Result.success(employee);
+    }
+
+    @PutMapping()
+    @ApiOperation("修改员工信息")
+    public Result updateEmployee(@RequestBody EmployeeDTO employeeDTO) {
+        log.info("被修改的员工是：{}", employeeDTO);
+        employeeService.updateEmployee(employeeDTO);
         return Result.success();
     }
 
