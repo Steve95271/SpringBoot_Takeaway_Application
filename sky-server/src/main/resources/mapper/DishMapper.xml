@@ -8,6 +8,34 @@
         VALUES (#{name}, #{categoryId}, #{price}, #{image}, #{description}, #{createTime}, #{updateTime}, #{createUser}, #{updateUser}, #{status})
     </insert>
 
+    <select id="pageQuery" resultType="com.sky.vo.DishVO">
+        SELECT dish.*, category.name AS categoryName
+        FROM dish
+        LEFT OUTER JOIN category
+        ON dish.category_id = category.id
+        <where>
+            <if test="categoryId != null">
+                AND category_id = #{categoryId}
+            </if>
 
+            <if test="name != null">
+                AND dish.name like concat('%',#{name},'%')
+            </if>
+
+            <if test="status != null">
+                AND status = #{status}
+            </if>
+        </where>
+        ORDER BY dish.create_time DESC
+    </select>
+
+    <delete id="deleteByIds" parameterType="java.lang.Long">
+        DELETE FROM dish
+        WHERE id
+        IN
+        <foreach collection="ids" item="id" open="(" close=")" separator=",">
+        #{id}
+        </foreach>
+    </delete>
 
 </mapper>
