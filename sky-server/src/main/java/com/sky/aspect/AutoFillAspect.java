@@ -30,7 +30,7 @@ public class AutoFillAspect {
         //获取到当前被拦截到的方法上的数据库操作类型
         MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature(); //方法签名对象
         AutoFill autoFill = methodSignature.getMethod().getAnnotation(AutoFill.class); //获得方法上注解对象
-        OperationType operationType = autoFill.value();
+        OperationType operationType = autoFill.value(); //获取执行的是INSERT还是UPDATE
 
         //获取到当前被拦截到的方法的参数的实体
         Object[] args = joinPoint.getArgs();
@@ -38,7 +38,9 @@ public class AutoFillAspect {
             return;
         }
 
-        Object entity = args[0]; //获取第一个参数。
+        //获取第一个参数。
+        //第一个参数是传进来给数据库赋值的参数，这个是我们想要的。
+        Object entity = args[0];
 
         //准备赋值的数据
         LocalDateTime now = LocalDateTime.now();
