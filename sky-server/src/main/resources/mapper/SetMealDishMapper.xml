@@ -20,4 +20,12 @@
             #{dishId}
         </foreach>
     </select>
+
+    <delete id="delete">
+        DELETE FROM setmeal_dish
+        WHERE setmeal_id IN
+        <foreach collection="ids" item="setmealId" open="(" close=")" separator=",">
+            #{setmealId}
+        </foreach>
+    </delete>
 </mapper>

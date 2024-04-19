@@ -12,3 +12,8 @@ sky:
     access-key-id: LTAI5tSVp3rcyCbNMAUMvxxE
     access-key-secret: t14jEEAMaC2O5cOFbCEWroCUSx9KRJ
     bucket-name: sky-takeaway-app-steve
+
+  redis:
+    host: localhost
+    port: 6379
+    password: 123456
