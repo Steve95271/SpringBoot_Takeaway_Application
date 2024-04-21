@@ -71,4 +71,12 @@ public interface DishMapper {
             "FROM dish " +
             "WHERE category_id = #{categoryId}")
     List<Dish> getDishByCategoryId(Long categoryId);
+
+    /**
+     * 根据分类ID和起售状态查询菜品
+     * @param dish
+     * @return
+     */
+    @Select("SELECT id, name, category_id, price, image, description, status, create_time, update_time, create_user, update_user FROM dish WHERE category_id = #{categoryId} AND status = #{status}")
+    List<Dish> list(Dish dish);
 }
