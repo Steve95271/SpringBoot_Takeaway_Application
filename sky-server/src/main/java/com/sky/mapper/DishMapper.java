@@ -79,4 +79,12 @@ public interface DishMapper {
      */
     @Select("SELECT id, name, category_id, price, image, description, status, create_time, update_time, create_user, update_user FROM dish WHERE category_id = #{categoryId} AND status = #{status}")
     List<Dish> list(Dish dish);
+
+    /**
+     * 更改菜品的状态（起售/停售）
+     * @param status
+     * @param id
+     */
+    @Select("UPDATE dish SET status = #{status} WHERE id = #{id}")
+    void changeStatus(Integer status, Long id);
 }
