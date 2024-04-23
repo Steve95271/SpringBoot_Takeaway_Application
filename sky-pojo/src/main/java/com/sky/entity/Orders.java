@@ -58,15 +58,18 @@ public class Orders implements Serializable {
     private LocalDateTime checkoutTime;
 
     //支付方式 1微信，2支付宝
+    //DTO有
     private Integer payMethod;
 
     //支付状态 0未支付 1已支付 2退款
     private Integer payStatus;
 
     //实收金额
+    //DTO有
     private BigDecimal amount;
 
     //备注
+    //DTO有
     private String remark;
 
     //用户名
@@ -91,20 +94,25 @@ public class Orders implements Serializable {
     private LocalDateTime cancelTime;
 
     //预计送达时间
+    //DTO有
     private LocalDateTime estimatedDeliveryTime;
 
     //配送状态  1立即送出  0选择具体时间
+    //DTO有
     private Integer deliveryStatus;
 
     //送达时间
     private LocalDateTime deliveryTime;
 
     //打包费
+    //DTO有
     private int packAmount;
 
     //餐具数量
+    //DTO有
     private int tablewareNumber;
 
     //餐具数量状态  1按餐量提供  0选择具体数量
+    //DTO有
     private Integer tablewareStatus;
 }
