@@ -21,5 +21,5 @@ public interface OrderDetailMapper {
      * @return 订单明细
      */
     @Select("SELECT * FROM order_detail where order_id = #{id}")
-    List<OrderDetail> getById(Long id);
+    List<OrderDetail> getByOrderId(Long id);
 }

@@ -43,4 +43,10 @@ public interface OrderService {
      * @return 分页查询的结果
      */
     PageResult pageQuery(Integer page, Integer pageSize, Integer status);
+
+    /**
+     * 用户取消订单
+     * @param id
+     */
+    void userCancelById(Long id) throws Exception;
 }

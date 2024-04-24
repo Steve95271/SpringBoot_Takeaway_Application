@@ -22,6 +22,7 @@ import com.sky.vo.OrderVO;
 import com.sky.websocket.WebSocketServer;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
@@ -47,6 +48,8 @@ public class OrderServiceImpl implements OrderService {
     private WeChatPayUtil weChatPayUtil;
     @Autowired
     private WebSocketServer webSocketServer;
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     @Override
     @Transactional
@@ -184,7 +187,7 @@ public class OrderServiceImpl implements OrderService {
         //通过订单ID查询订单信息
         Orders order = orderMapper.getById(id);
         //通过订单id查询明细信息
-        List<OrderDetail> list = orderDetailMapper.getById(id);
+        List<OrderDetail> list = orderDetailMapper.getByOrderId(id);
         //创建OrderVO对象用于返回数据
         OrderVO orderVO = new OrderVO();
         //拷贝查询到的数据到OrderVO对象
@@ -214,6 +217,61 @@ public class OrderServiceImpl implements OrderService {
         long total = order.getTotal();
         List<Orders> orderList = order.getResult();
 
-        return new PageResult(total, orderList);
+        //创建OrderVO对象
+        List<OrderVO> orderVOList = new ArrayList<>();
+
+        //把查询到的订单复制到OrderVO集合
+        for (Orders o : orderList) {
+            OrderVO tempOrderVO = new OrderVO();
+            BeanUtils.copyProperties(o, tempOrderVO);
+            List<OrderDetail> currOrderDetails = orderDetailMapper.getByOrderId(o.getId());
+            tempOrderVO.setOrderDetailList(currOrderDetails);
+            orderVOList.add(tempOrderVO);
+        }
+
+        return new PageResult(total, orderVOList);
+    }
+
+    /**
+     * 用户取消订单
+     *
+     * @param id
+     */
+    public void userCancelById(Long id) throws Exception {
+        // 根据id查询订单
+        Orders ordersDB = orderMapper.getById(id);
+
+        // 校验订单是否存在
+        if (ordersDB == null) {
+            throw new OrderBusinessException(MessageConstant.ORDER_NOT_FOUND);
+        }
+
+        //订单状态 1待付款 2待接单 3已接单 4派送中 5已完成 6已取消
+        if (ordersDB.getStatus() > 2) {
+            throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
+        }
+
+        Orders orders = new Orders();
+        orders.setId(ordersDB.getId());
+
+        // 订单处于待接单状态下取消，需要进行退款
+        /*if (ordersDB.getStatus().equals(Orders.TO_BE_CONFIRMED)) {
+            //调用微信支付退款接口
+            weChatPayUtil.refund(
+                    ordersDB.getNumber(), //商户订单号
+                    ordersDB.getNumber(), //商户退款单号
+                    new BigDecimal(0.01),//退款金额，单位 元
+                    new BigDecimal(0.01));//原订单金额
+
+            //支付状态修改为 退款
+            orders.setPayStatus(Orders.REFUND);
+        }*/
+        orders.setPayStatus(Orders.REFUND);
+
+        // 更新订单状态、取消原因、取消时间
+        orders.setStatus(Orders.CANCELLED);
+        orders.setCancelReason("用户取消");
+        orders.setCancelTime(LocalDateTime.now());
+        orderMapper.update(orders);
     }
 }
