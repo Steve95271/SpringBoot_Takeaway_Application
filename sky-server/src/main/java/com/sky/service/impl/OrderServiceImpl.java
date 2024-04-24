@@ -2,6 +2,8 @@ package com.sky.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import com.sky.constant.MessageConstant;
 import com.sky.context.BaseContext;
 import com.sky.dto.OrdersPaymentDTO;
@@ -11,17 +13,17 @@ import com.sky.exception.AddressBookBusinessException;
 import com.sky.exception.OrderBusinessException;
 import com.sky.exception.ShoppingCartBusinessException;
 import com.sky.mapper.*;
+import com.sky.result.PageResult;
 import com.sky.service.OrderService;
 import com.sky.utils.WeChatPayUtil;
 import com.sky.vo.OrderPaymentVO;
 import com.sky.vo.OrderSubmitVO;
+import com.sky.vo.OrderVO;
 import com.sky.websocket.WebSocketServer;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -172,4 +174,46 @@ public class OrderServiceImpl implements OrderService {
         webSocketServer.sendToAllClient(json);
     }
 
+    /**
+     * 根据订单ID查询订单详细信息
+     * @param id 订单ID
+     * @return OrderVO
+     */
+    @Override
+    public OrderVO getById(Long id) {
+        //通过订单ID查询订单信息
+        Orders order = orderMapper.getById(id);
+        //通过订单id查询明细信息
+        List<OrderDetail> list = orderDetailMapper.getById(id);
+        //创建OrderVO对象用于返回数据
+        OrderVO orderVO = new OrderVO();
+        //拷贝查询到的数据到OrderVO对象
+        BeanUtils.copyProperties(order, orderVO);
+        //把查询到的订单明细赋值到OrderVO的成员变量上
+        orderVO.setOrderDetailList(list);
+        //返回数据
+        return orderVO;
+    }
+
+    /**
+     * 查询历史订单
+     * @param page 页面
+     * @param pageSize 每页记录数
+     * @param status 订单状态
+     * @return 分页查询的结果
+     */
+    @Override
+    public PageResult pageQuery(Integer page, Integer pageSize, Integer status) {
+        //获取当前用户id
+        Long userId = BaseContext.getCurrentId();
+
+        //分页查询
+        PageHelper.startPage(page, pageSize);
+        Page<Orders> order = orderMapper.pageQuery(page, pageSize, status, userId);
+
+        long total = order.getTotal();
+        List<Orders> orderList = order.getResult();
+
+        return new PageResult(total, orderList);
+    }
 }
