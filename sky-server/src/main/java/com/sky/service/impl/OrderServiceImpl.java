@@ -20,6 +20,7 @@ import com.sky.vo.OrderStatisticsVO;
 import com.sky.vo.OrderSubmitVO;
 import com.sky.vo.OrderVO;
 import com.sky.websocket.WebSocketServer;
+import io.swagger.models.auth.In;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -52,8 +53,6 @@ public class OrderServiceImpl implements OrderService {
     private WeChatPayUtil weChatPayUtil;
     @Autowired
     private WebSocketServer webSocketServer;
-    @Autowired
-    private RedisTemplate redisTemplate;
 
     @Override
     @Transactional
@@ -173,7 +172,7 @@ public class OrderServiceImpl implements OrderService {
 
         //通过websocket向客户端浏览器推送信息
         Map map = new HashMap<>();
-        map.put("type", 1);
+        map.put("type", 1); // 1 表示来单提醒 2 表示客户催单
         map.put("orderId", ordersDB.getId());
         map.put("content", "订单号: " + outTradeNo);
 
@@ -509,5 +508,26 @@ public class OrderServiceImpl implements OrderService {
         orders.setDeliveryTime(LocalDateTime.now());
 
         orderMapper.update(orders);
+    }
+
+    /**
+     * 客户催单
+     */
+    @Override
+    public void remind(Long id) {
+        // 根据id查询订单
+        Orders ordersDB = orderMapper.getById(id);
+
+        // 校验订单是否存在
+        if (ordersDB == null) {
+            throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
+        }
+
+        Map map = new HashMap<>();
+        map.put("type", 2);
+        map.put("ordereId", id);
+        map.put("content", "订单号: " + ordersDB.getNumber());
+
+        webSocketServer.sendToAllClient(JSON.toJSONString(map));
     }
 }
