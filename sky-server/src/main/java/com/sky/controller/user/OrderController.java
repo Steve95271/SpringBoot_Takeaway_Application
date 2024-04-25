@@ -34,7 +34,7 @@ public class OrderController {
     @ApiOperation("根据订单ID查询订单详细信息")
     public Result<OrderVO> getById(@PathVariable Long id) {
         log.info("根据订单ID查询订单详细信息: {}", id);
-        OrderVO orderVO = orderService.getById(id);
+        OrderVO orderVO = orderService.details(id);
         return Result.success(orderVO);
     }
 
