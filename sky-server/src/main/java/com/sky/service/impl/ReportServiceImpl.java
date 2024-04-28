@@ -1,10 +1,13 @@
 package com.sky.service.impl;
 
 import com.sky.entity.Orders;
+import com.sky.entity.User;
 import com.sky.mapper.OrderMapper;
 import com.sky.mapper.ReportMapper;
+import com.sky.mapper.UserMapper;
 import com.sky.service.ReportService;
 import com.sky.vo.TurnoverReportVO;
+import com.sky.vo.UserReportVO;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,9 +24,10 @@ import java.util.Map;
 public class ReportServiceImpl implements ReportService {
 
     @Autowired
-    private ReportMapper reportMapper;
-    @Autowired
     private OrderMapper orderMapper;
+
+    @Autowired
+    private UserMapper userMapper;
 
     /**
      * 获取一段时间内的营业额
@@ -47,7 +51,7 @@ public class ReportServiceImpl implements ReportService {
         //存放每日营业额
         List<Double> turnoverList = new ArrayList<>();
         for (LocalDate date : dateList) {
-            //设置当日的开始时间和结束时间
+            //设置当日的开始时间和结束时间 - 需要把LocalDate类型的变量转成LocalDateTime
             LocalDateTime beginTime = LocalDateTime.of(date, LocalTime.MIN);
             LocalDateTime endTime = LocalDateTime.of(date, LocalTime.MAX);
 
@@ -70,4 +74,58 @@ public class ReportServiceImpl implements ReportService {
                 .turnoverList(StringUtils.join(turnoverList, ","))
                 .build();
     }
+
+    /**
+     * 用户数据统计
+     * @param begin 查询的开始日期
+     * @param end 查询的结束日期
+     * @return 一段时间内每日的总用户数和新增用户数
+     */
+    @Override
+    public UserReportVO getUserStatistics(LocalDate begin, LocalDate end) {
+        List<LocalDate> dateList = new ArrayList<>();
+        dateList.add(begin);
+
+        //把每天的日期加到集合中
+        List<Integer> totalUser = new ArrayList<>();
+        List<Integer> newUser = new ArrayList<>();
+        while (!begin.equals(end)) {
+            begin = begin.plusDays(1);
+            dateList.add(begin);
+        }
+
+        for (LocalDate date : dateList) {
+            //设置当日的开始时间和结束时间 - 需要把LocalDate类型的变量转成LocalDateTime
+            LocalDateTime beginTime = LocalDateTime.of(date, LocalTime.MIN);
+            LocalDateTime endTime = LocalDateTime.of(date, LocalTime.MAX);
+
+            Map map = new HashMap();
+            //先放endTime进去用于查询到某一日为止的总用户数
+            map.put("end", endTime);
+
+            //查询某一日的总用户数量
+            Integer total = userMapper.getUserCount(map);
+            //判断是否为空
+            total = total == null ? 0 : total;
+            //Add to totalUser List
+            totalUser.add(total);
+
+            //把开始日期放进去map集合，当beginTime和endTime两个变量都有值的时候就能够查询到当日新增的用户
+            map.put("begin", beginTime);
+            Integer newUserInCurrentDay = userMapper.getUserCount(map);
+            //Check if Null
+            newUserInCurrentDay = newUserInCurrentDay == null ? 0 : newUserInCurrentDay;
+            //Add to newUser List
+            newUser.add(newUserInCurrentDay);
+        }
+
+        return UserReportVO
+                .builder()
+                .dateList(StringUtils.join(dateList, ","))
+                .totalUserList(StringUtils.join(totalUser, ","))
+                .newUserList(StringUtils.join(newUser, ","))
+                .build();
+    }
+
+
 }
