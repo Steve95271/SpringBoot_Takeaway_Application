@@ -79,4 +79,11 @@ public interface OrderMapper {
      * @return
      */
     Double sunByMap(Map map);
+
+    /**
+     *根据动态条件统计订单数
+     * @param map 条件的map集合
+     * @return 订单数量
+     */
+    Integer countByMap(Map map);
 }
