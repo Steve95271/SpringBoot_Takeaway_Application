@@ -38,7 +38,7 @@
             </if>
 
             <if test="status != null">
-                AND status = #{status}
+                AND dish.status = #{status}
             </if>
         </where>
         ORDER BY dish.create_time DESC
@@ -52,5 +52,17 @@
         #{id}
         </foreach>
     </delete>
+
+    <select id="countByMap" resultType="java.lang.Integer">
+        select count(id) from dish
+        <where>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <if test="categoryId != null">
+                and category_id = #{categoryId}
+            </if>
+        </where>
+    </select>
 
 </mapper>

@@ -1,12 +1,12 @@
 package com.sky.service.impl;
 
+import com.sky.dto.GoodsSalesDTO;
 import com.sky.entity.Orders;
-import com.sky.entity.User;
 import com.sky.mapper.OrderMapper;
-import com.sky.mapper.ReportMapper;
 import com.sky.mapper.UserMapper;
 import com.sky.service.ReportService;
 import com.sky.vo.OrderReportVO;
+import com.sky.vo.SalesTop10ReportVO;
 import com.sky.vo.TurnoverReportVO;
 import com.sky.vo.UserReportVO;
 import org.apache.commons.lang3.StringUtils;
@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class ReportServiceImpl implements ReportService {
@@ -32,8 +33,9 @@ public class ReportServiceImpl implements ReportService {
 
     /**
      * 获取一段时间内的营业额
+     *
      * @param begin 开始时间
-     * @param end 结束时间
+     * @param end   结束时间
      * @return 一段时间内的营业额数据
      */
     @Override
@@ -60,7 +62,7 @@ public class ReportServiceImpl implements ReportService {
             map.put("begin", beginTime);
             map.put("end", endTime);
             map.put("status", Orders.COMPLETED);
-            Double turnoverOfADay = orderMapper.sunByMap(map);
+            Double turnoverOfADay = orderMapper.sumByMap(map);
 
             //检查是否为空
             turnoverOfADay = turnoverOfADay == null ? 0.0 : turnoverOfADay;
@@ -78,8 +80,9 @@ public class ReportServiceImpl implements ReportService {
 
     /**
      * 用户数据统计
+     *
      * @param begin 查询的开始日期
-     * @param end 查询的结束日期
+     * @param end   查询的结束日期
      * @return 一段时间内每日的总用户数和新增用户数
      */
     @Override
@@ -130,8 +133,9 @@ public class ReportServiceImpl implements ReportService {
 
     /**
      * 订单数据统计
+     *
      * @param begin 查询的开始日期
-     * @param end 查询的结束日期
+     * @param end   查询的结束日期
      * @return 指定时间内的所有订单和有效订单
      */
     @Override
@@ -148,7 +152,7 @@ public class ReportServiceImpl implements ReportService {
         List<Integer> ordersList = new ArrayList<>();
         List<Integer> completedOrdersList = new ArrayList<>();
         for (LocalDate date : dateList) {
-            LocalDateTime beginTime= LocalDateTime.of(date, LocalTime.MIN);
+            LocalDateTime beginTime = LocalDateTime.of(date, LocalTime.MIN);
             LocalDateTime endTime = LocalDateTime.of(date, LocalTime.MAX);
 
             Integer ordersOfADay = getOrderCount(beginTime, endTime, null);
@@ -185,5 +189,39 @@ public class ReportServiceImpl implements ReportService {
         map.put("status", status);
 
         return orderMapper.countByMap(map);
+    }
+
+    @Override
+    public SalesTop10ReportVO getSalesStatistics(LocalDate begin, LocalDate end) {
+        LocalDateTime beginTime = LocalDateTime.of(begin, LocalTime.MIN);
+        LocalDateTime endTime = LocalDateTime.of(end, LocalTime.MAX);
+
+        Map map = new HashMap();
+        map.put("begin", beginTime);
+        map.put("endTime", endTime);
+        map.put("status", 5);
+
+        List<GoodsSalesDTO> salesStatisticsList = orderMapper.getSalesByMap(map);
+
+        String nameList = StringUtils.join(
+                salesStatisticsList
+                        .stream()
+                        .map(GoodsSalesDTO::getName)
+                        .collect(Collectors.toList()), ","
+        );
+
+        String numberList = StringUtils.join(
+                salesStatisticsList
+                        .stream()
+                        .map(GoodsSalesDTO::getNumber)
+                        .collect(Collectors.toList()), ","
+        );
+
+
+        return SalesTop10ReportVO
+                .builder()
+                .nameList(nameList)
+                .numberList(numberList)
+                .build();
     }
 }
