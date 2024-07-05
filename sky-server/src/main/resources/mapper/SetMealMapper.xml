@@ -8,7 +8,7 @@
         VALUES (#{categoryId}, #{name}, #{price}, #{description}, #{image}, #{createTime}, #{updateTime}, #{createUser}, #{updateUser})
     </insert>
     
-    <update id="update" parameterType="com.sky.entity.Setmeal">
+    <update id="update" parameterType="com.onlineOrder.entity.Setmeal">
         UPDATE setmeal
         <set>
             <if test="categoryId != null">category_id = #{categoryId},</if>
@@ -22,7 +22,7 @@
         WHERE id = #{id}
     </update>
 
-    <select id="pageQuery" resultType="com.sky.entity.Setmeal">
+    <select id="pageQuery" resultType="com.onlineOrder.entity.Setmeal">
         SELECT *
         FROM setmeal
         <where>

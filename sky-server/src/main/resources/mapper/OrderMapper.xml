@@ -12,7 +12,7 @@
                 #{deliveryStatus}, #{packAmount}, #{tablewareNumber}, #{tablewareStatus})
     </insert>
 
-    <update id="update" parameterType="com.sky.entity.Orders">
+    <update id="update" parameterType="com.onlineOrder.entity.Orders">
         update orders
         <set>
             <if test="cancelReason != null and cancelReason!='' ">
@@ -43,7 +43,7 @@
         where id = #{id}
     </update>
 
-    <select id="pageQuery" resultType="com.sky.entity.Orders">
+    <select id="pageQuery" resultType="com.onlineOrder.entity.Orders">
         SELECT * FROM orders
         <where>
             user_id = #{userId}
@@ -54,7 +54,7 @@
         ORDER BY order_time DESC
     </select>
 
-    <select id="pageQueryWithCondition" resultType="com.sky.entity.Orders">
+    <select id="pageQueryWithCondition" resultType="com.onlineOrder.entity.Orders">
         SELECT * FROM orders
         <where>
             <if test="number != null">
@@ -109,7 +109,7 @@
         </where>
     </select>
 
-    <select id="getSalesByMap" resultType="com.sky.dto.GoodsSalesDTO">
+    <select id="getSalesByMap" resultType="com.onlineOrder.dto.GoodsSalesDTO">
         SELECT od.name name, SUM(od.number) number
         FROM order_detail od, orders o
         <where>
