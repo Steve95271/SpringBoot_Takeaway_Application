@@ -3,7 +3,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.sky.mapper.EmployeeMapper">
 
-    <select id="pageQuery" resultType="com.onlineOrder.entity.Employee">
+    <select id="pageQuery" resultType="com.sky.entity.Employee">
         SELECT * FROM employee
         <where>
             <if test="name != null and name !='' ">
@@ -13,7 +13,7 @@
         ORDER BY create_time DESC
     </select>
 
-    <update id="update" parameterType="com.onlineOrder.entity.Employee">
+    <update id="update" parameterType="com.sky.entity.Employee">
         UPDATE employee
         <set>
             <if test="name != null">name = #{name},</if>

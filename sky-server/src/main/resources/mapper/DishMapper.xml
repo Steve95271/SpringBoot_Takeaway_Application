@@ -23,7 +23,7 @@
         WHERE id = #{id}
     </update>
 
-    <select id="pageQuery" resultType="com.onlineOrder.vo.DishVO">
+    <select id="pageQuery" resultType="com.sky.vo.DishVO">
         SELECT dish.*, category.name AS categoryName
         FROM dish
         LEFT OUTER JOIN category
