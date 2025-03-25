@@ -3,13 +3,13 @@ server:
 
 spring:
   profiles:
-    active: dev
+    active: docker
   main:
     allow-circular-references: true
   datasource:
     druid:
       driver-class-name: ${sky.datasource.driver-class-name}
-      url: jdbc:mysql://${sky.datasource.host}:${sky.datasource.port}/${sky.datasource.database}?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true
+      url: jdbc:mysql://${sky.datasource.host}:${sky.datasource.port}/${sky.datasource.database}
       username: ${sky.datasource.username}
       password: ${sky.datasource.password}
   redis:
