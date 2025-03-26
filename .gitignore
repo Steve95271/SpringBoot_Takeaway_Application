@@ -6,3 +6,4 @@
 **/test/
 sky-server/src/main/resources/application-dev.yml
 sky-server/src/main/resources/application-docker.yml
+sky-server/src/main/resources/application-local.yml
