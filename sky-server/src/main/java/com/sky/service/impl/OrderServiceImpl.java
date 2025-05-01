@@ -20,6 +20,7 @@ import com.sky.vo.OrderStatisticsVO;
 import com.sky.vo.OrderSubmitVO;
 import com.sky.vo.OrderVO;
 import com.sky.websocket.WebSocketServer;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,22 +35,22 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
 
-    @Autowired
-    private OrderMapper orderMapper;
-    @Autowired
-    private OrderDetailMapper orderDetailMapper;
-    @Autowired
-    private AddressBookMapper addressBookMapper;
-    @Autowired
-    private ShoppingCartMapper shoppingCartMapper;
-    @Autowired
-    private UserMapper userMapper;
-    @Autowired
-    private WeChatPayUtil weChatPayUtil;
-    @Autowired
-    private WebSocketServer webSocketServer;
+    private final OrderMapper orderMapper;
+
+    private final OrderDetailMapper orderDetailMapper;
+
+    private final AddressBookMapper addressBookMapper;
+
+    private final ShoppingCartMapper shoppingCartMapper;
+
+    private final UserMapper userMapper;
+
+    private final WeChatPayUtil weChatPayUtil;
+
+    private final WebSocketServer webSocketServer;
 
     @Override
     @Transactional
@@ -124,7 +125,7 @@ public class OrderServiceImpl implements OrderService {
         Long userId = BaseContext.getCurrentId();
         User user = userMapper.getById(userId);
 
-        //调用微信支付接口，生成预支付交易单
+        // 调用微信支付接口，生成预支付交易单
         /*JSONObject jsonObject = weChatPayUtil.pay(
                 ordersPaymentDTO.getOrderNumber(), //商户订单号
                 new BigDecimal(0.01), //支付金额，单位 元

@@ -123,6 +123,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         Employee employee = new Employee();
         employee.setStatus(state);
         employee.setId(id);
+        System.out.println(employee);
 
         employeeMapper.update(employee);
     }
